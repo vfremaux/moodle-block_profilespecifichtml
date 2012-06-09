@@ -1,0 +1,88 @@
+<?php
+    $usehtmleditor = can_use_html_editor();
+    
+    $userfieldcats = get_records('user_info_category', '', '', 'sortorder');
+    
+    $fieldoptions = array();
+    foreach($userfieldcats as $cat){
+    	$fieldoptions[$cat->name] = get_records_menu('user_info_field', 'categoryid', $cat->id, 'sortorder', 'id,name');
+    }
+        
+    $fieldopoptions['=='] = '=';
+    $fieldopoptions['!='] = '!=';
+    $fieldopoptions['>'] = '>';
+    $fieldopoptions['<'] = '<';
+    $fieldopoptions['>='] = '>=';
+    $fieldopoptions['<='] = '<=';
+    
+    $clauseopoptions[0] = get_string('-', 'block_profilespecifichtml');
+    $clauseopoptions['&&'] = get_string('and', 'block_profilespecifichtml');
+    $clauseopoptions['||'] = get_string('or', 'block_profilespecifichtml');
+
+	$texts = array();
+    if (empty($this->instance->pinned) and $this->instance->pagetype !== 'course-view') {
+        $this->config->text_all = clean_text(@$this->config->text_all, FORMAT_HTML);
+        $this->config->text_match = clean_text(@$this->config->text_match, FORMAT_HTML);
+        $this->config->text_nomatch = clean_text(@$this->config->text_nomatch, FORMAT_HTML);
+    }
+?>
+<table cellpadding="9" cellspacing="0">
+<tr valign="top">
+    <td align="right"><?php print_string('configtitle', 'block_profilespecifichtml'); ?>:</td>
+    <td><input type="text" name="title" size="30" value="<?php echo isset($this->config->title)?p($this->config->title):''; ?>" /> (<?php print_string('leaveblanktohide', 'block_rolespecifichtml'); ?>)</td>
+</tr>
+<tr valign="top">
+    <td align="right"><?php print_string('configprofilefield1', 'block_profilespecifichtml'); ?>:</td>
+    <td>
+    	<?php
+    	choose_from_menu_nested($fieldoptions, 'field1', @$this->config->field1, 'choose');
+    	choose_from_menu($fieldopoptions, 'op1', @$this->config->op1, 'choose');
+    	?>
+    	<input type="text" name="value1" value="<?php echo @$this->config->value1 ?>" />
+    </td>
+</tr>
+<tr valign="top">
+    <td align="right"><?php print_string('configprofileop', 'block_profilespecifichtml'); ?>:</td>
+    <td>
+    	<?php
+    	choose_from_menu($clauseopoptions, 'op', @$this->config->op, 'choose');
+    	?>
+    </td>
+</tr>
+<tr valign="top">
+    <td align="right"><?php print_string('configprofilefield2', 'block_profilespecifichtml'); ?>:</td>
+    <td>
+    	<?php
+    	choose_from_menu_nested($fieldoptions, 'field2', @$this->config->field2, 'choose');
+    	choose_from_menu($fieldopoptions, 'op2', @$this->config->op2, 'choose');
+    	?>
+    	<input type="text" name="value2" value="<?php echo @$this->config->value2 ?>" />
+    </td>
+</tr>
+<tr valign="top">
+    <td align="right"><?php print_string('configcontentforall', 'block_profilespecifichtml'); ?>:</td>
+    <td><?php 
+    	print_textarea($usehtmleditor, 25, 50, 0, 0, 'text_all', @$this->config->text_all) ?>
+    	</td>
+</tr>
+<tr valign="top">
+    <td align="right"><?php print_string('configcontentwhenmatch', 'block_profilespecifichtml'); ?>:</td>
+    <td><?php 
+    	print_textarea($usehtmleditor, 25, 50, 0, 0, 'text_match', @$this->config->text_match) ?>
+    	</td>
+</tr>
+<tr valign="top">
+    <td align="right"><?php print_string('configcontentwhennomatch', 'block_profilespecifichtml'); ?>:</td>
+    <td><?php 
+    	print_textarea($usehtmleditor, 25, 50, 0, 0, 'text_nomatch', @$this->config->text_nomatch) ?>
+    	</td>
+</tr>
+<tr>
+    <td colspan="3" align="center">
+    <input type="submit" value="<?php print_string('savechanges') ?>" /></td>
+</tr>
+</table>
+<?php if ($usehtmleditor) {
+          use_html_editor(); 
+      }
+?>
