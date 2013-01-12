@@ -217,7 +217,7 @@ class enrol_profilefield_plugin extends enrol_plugin {
 	            }
 	        }
 	    } else {
-	    	$output = $OUTPUT->heading(get_string('pluginname', 'enrol_profilefield'), 2);
+	    	$output = $OUTPUT->heading($instance->name, 2);
 	    	$output .= $OUTPUT->notification(get_string('badprofile', 'enrol_profilefield'));
 	    	$output .= $OUTPUT->continue_button($CFG->wwwroot);
         	return $OUTPUT->box($output);

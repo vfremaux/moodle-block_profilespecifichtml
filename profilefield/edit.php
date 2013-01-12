@@ -59,7 +59,7 @@ if ($instanceid) {
     $instance->customchar1 = ''; // profile field
     $instance->customchar2 = ''; // profile value
     $instance->customint1 = 1; // notifies teachers of entry by default
-    $instance->customtext1 = format_text(get_string('defaultnotification', 'enrol_profilefield')); // notification for teachers
+    $instance->customtext1 = get_string('defaultnotification', 'enrol_profilefield'); // notification for teachers
 }
 
 $mform = new enrol_profilefield_edit_form(NULL, array($instance, $plugin, $context));
@@ -74,7 +74,7 @@ if ($mform->is_cancelled()) {
         $instance->status         = $data->status;
         $instance->name           = $data->name;
         $instance->roleid         = $data->roleid;
-        $instance->customint1     = $data->notifymanagers;
+        $instance->customint1     = 0 + @$data->notifymanagers; // checkbox
         $instance->customtext1    = $data->notificationtext;
         $instance->customchar1    = $data->profilefield;
         $instance->customchar2    = $data->profilevalue;
