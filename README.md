@@ -9,4 +9,11 @@ of their local role or status in the course.
 
 Versions
 ========
-Only in MOODLE_19_STABLE for the moment.
+MOODLE_19_STABLE for Moodle 1.9
+
+MOODLE_22_STABLE replaces old MOODLE_22 tag
+=======
+moodle-enrol_profilefield
+=========================
+
+Allows binding an enrollemnt strategy to user profile values
