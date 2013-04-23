@@ -1,5 +1,7 @@
 <?php
 
+$string['profilespecifichtml:addinstance'] = 'Can add instance';
+
 $string['blockname'] = 'HTML (on profile field)';
 $string['pluginname'] = 'HTML (on profile field)';
 $string['newhtmlblock'] = 'New Profile Html Block';

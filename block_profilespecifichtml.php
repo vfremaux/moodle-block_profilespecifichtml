@@ -11,7 +11,13 @@ class block_profilespecifichtml extends block_base {
     }
 
     function specialization() {
-        $this->title = isset($this->config->title) ? format_string($this->config->title) : format_string(get_string('newhtmlblock', 'block_profilespecifichtml'));
+    	global $PAGE;
+
+    	if (empty($this->config->text_all) && empty($this->config->field1) && empty($this->config->field2) && $PAGE->user_is_editing()){
+    		$this->title = '';
+    	} else {
+	        $this->title = isset($this->config->title) ? format_string($this->config->title) : format_string(get_string('newhtmlblock', 'block_profilespecifichtml'));
+	    }
     }
 
     function instance_allow_multiple() {
@@ -54,9 +60,15 @@ class block_profilespecifichtml extends block_base {
         }
         
         $this->content = new stdClass;
+        
+        if (!isset($this->config)) $this->config = new StdClass;
 
-        $this->config->text_all = file_rewrite_pluginfile_urls($this->config->text_all, 'pluginfile.php', $this->context->id, 'block_profilespecifichtml', 'content', NULL);
-        $this->content->text = !empty($this->config->text_all) ? format_text($this->config->text_all, FORMAT_HTML, $filteropt) : '';
+		if (!empty($this->config->text_all)){
+	        $this->config->text_all = file_rewrite_pluginfile_urls($this->config->text_all, 'pluginfile.php', $this->context->id, 'block_profilespecifichtml', 'content', NULL);
+	        $this->content->text = format_text($this->config->text_all, FORMAT_HTML, $filteropt);
+	    } else {
+			$this->content->text = '';
+	    }
 
         if (empty($this->config->field1) && empty($this->config->field2)){
         	$this->content->footer = '';
@@ -105,13 +117,13 @@ class block_profilespecifichtml extends block_base {
         // Move embedded files into a proper filearea and adjust HTML links to match
 		// change proposed by jcockrell 
         $config->text_all = file_save_draft_area_files($data->text_all['itemid'], $this->context->id, 'block_profilespecifichtml', 'content', 0, array('subdirs'=>true), $data->text_all['text']);
-        $config->format_all = $data->text_all['format'];
+        $config->format_all = @$data->text_all['format'];
 
         $config->text_match = file_save_draft_area_files($data->text_match['itemid'], $this->context->id, 'block_profilespecifichtml', 'match', 0, array('subdirs'=>true), $data->text_match['text']);
-        $config->format_match = $data->text_matched['format'];
+        $config->format_match = @$data->text_matched['format'];
 
         $config->text_nomatch = file_save_draft_area_files($data->text_nomatch['itemid'], $this->context->id, 'block_profilespecifichtml', 'nomatch', 0, array('subdirs'=>true), $data->text_nomatch['text']);
-        $config->format_nomatch = $data->text_nomatched['format'];
+        $config->format_nomatch = @$data->text_nomatched['format'];
 
         parent::instance_config_save($config, $nolongerused);
     }
