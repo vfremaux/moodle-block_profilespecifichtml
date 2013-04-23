@@ -9,4 +9,10 @@ of their local role or status in the course.
 
 Versions
 ========
-Only in MOODLE_19_STABLE for the moment.
+MOODLE_19_STABLE for Moodle 1.9
+
+MOODLE_22_STABLE replaces old MOODLE_22 tag
+
+MOODLE_24_STABLE Moodle 2.4 specific additions
+
+master : on progress developement

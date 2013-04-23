@@ -79,6 +79,15 @@ class block_profilespecifichtml_edit_form extends block_edit_form {
     function set_data($defaults, &$files = null) {
     	global $COURSE;
     	
+    	if (!isset($this->block->config)){
+    		$this->block->config = new StdClass;
+    		$this->block->config->text_all = '';
+    		$this->block->config->field1 = '';
+    		$this->block->config->field2 = '';
+    		$this->block->config->text_match = '';
+    		$this->block->config->text_nomatch = '';
+    	}
+    	
     	$text_all = '';
     	$text_match = '';
     	$text_nomatch = '';
