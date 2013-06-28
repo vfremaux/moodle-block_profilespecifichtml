@@ -33,7 +33,14 @@ class block_profilespecifichtml_edit_form extends block_edit_form {
 
 	    $userfieldcats = $DB->get_records('user_info_category', array(), 'sortorder');
 	    
-	    $fieldoptions = array();
+	    $fieldoptions = array(
+	    	'institution' => get_string('institution'),
+	    	'department' => get_string('department'),
+	    	'confirmed' => get_string('confirmed'),
+	    	'city' => get_string('city'),
+	    	'country' => get_string('country'),
+	    	'email' => get_string('email')
+	    );
 	    foreach($userfieldcats as $cat){
 	    	$fieldoptions = $fieldoptions + $DB->get_records_menu('user_info_field', array('categoryid' => $cat->id), 'sortorder', 'id,name');
 	    }
@@ -44,6 +51,7 @@ class block_profilespecifichtml_edit_form extends block_edit_form {
 	    $fieldopoptions['<'] = '<';
 	    $fieldopoptions['>='] = '>=';
 	    $fieldopoptions['<='] = '<=';
+	    $fieldopoptions['~='] = '~= (like)';
 	    
 	    $clauseopoptions[0] = get_string('minus', 'block_profilespecifichtml');
 	    $clauseopoptions['&&'] = get_string('and', 'block_profilespecifichtml');
@@ -146,6 +154,7 @@ class block_profilespecifichtml_edit_form extends block_edit_form {
         parent::set_data($defaults);
 
         // restore $text in each
+        $this->block->config = new StdClass;
         $this->block->config->text_all = $text_all;
         $this->block->config->text_match = $text_match;
         $this->block->config->text_nomatch = $text_nomatch;

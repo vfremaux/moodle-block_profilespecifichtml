@@ -1,6 +1,7 @@
 <?php
 
 $string['profilespecifichtml:addinstance'] = 'Can add instance';
+$string['profilespecifichtml:myaddinstance'] = 'Can add instance to My page';
 
 $string['blockname'] = 'HTML (on profile field)';
 $string['pluginname'] = 'HTML (on profile field)';

@@ -1,6 +1,7 @@
 <?php
-//Capabilities
+
 $string['profilespecifichtml:addinstance'] = 'Peut ajouter une instance';
+$string['profilespecifichtml:myaddinstance'] = 'Peut ajouter une instance aux pages personelles';
 
 $string['blockname'] = 'HTML (par profil)';
 $string['pluginname'] = 'HTML (par profil)';

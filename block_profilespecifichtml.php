@@ -11,13 +11,7 @@ class block_profilespecifichtml extends block_base {
     }
 
     function specialization() {
-    	global $PAGE;
-
-    	if (empty($this->config->text_all) && empty($this->config->field1) && empty($this->config->field2) && $PAGE->user_is_editing()){
-    		$this->title = '';
-    	} else {
-	        $this->title = isset($this->config->title) ? format_string($this->config->title) : format_string(get_string('newhtmlblock', 'block_profilespecifichtml'));
-	    }
+        $this->title = isset($this->config->title) ? format_string($this->config->title) : format_string(get_string('newhtmlblock', 'block_profilespecifichtml'));
     }
 
     function instance_allow_multiple() {
@@ -63,28 +57,46 @@ class block_profilespecifichtml extends block_base {
         
         if (!isset($this->config)) $this->config = new StdClass;
 
-		if (!empty($this->config->text_all)){
-	        $this->config->text_all = file_rewrite_pluginfile_urls($this->config->text_all, 'pluginfile.php', $this->context->id, 'block_profilespecifichtml', 'content', NULL);
-	        $this->content->text = format_text($this->config->text_all, FORMAT_HTML, $filteropt);
-	    } else {
-			$this->content->text = '';
-	    }
+        $this->config->text_all = file_rewrite_pluginfile_urls(@$this->config->text_all, 'pluginfile.php', $this->context->id, 'block_profilespecifichtml', 'content', NULL);
+        $this->content->text = !empty($this->config->text_all) ? format_text($this->config->text_all, FORMAT_HTML, $filteropt) : '';
 
         if (empty($this->config->field1) && empty($this->config->field2)){
         	$this->content->footer = '';
         	return($this->content);
         }       
         
-        $uservalue = $DB->get_field('user_info_data', 'data', array('fieldid' => $this->config->field1, 'userid' => $USER->id)); 
-        
-        $expr = "\$res1 = {$uservalue} {$this->config->op1} {$this->config->value1} ;";
+        if (!empty($this->config->field1)){
+        	if (is_numeric($this->config->field1) && $this->config->field1 > 0){
+		        $uservalue = $DB->get_field('user_info_data', 'data', array('fieldid' => $this->config->field1, 'userid' => $USER->id)); 
+		    } else {
+		    	$stduserfield = $this->config->field1;
+		    	$uservalue = $USER->$stduserfield;
+		    }
+	    }
+
+	    if ($this->config->op1 == '~=') {
+	        $expr = "\$res1 = preg_match('/{$this->config->value1}/', '{$uservalue}'}) ;";
+	    } else {        
+	        $expr = "\$res1 = {$uservalue} {$this->config->op1} '{$this->config->value1}' ;";
+	    }
         @eval($expr);
         
         if ($this->config->op){
 
-	        $uservalue = $DB->get_field('user_info_data', 'data', array('fieldid' => $this->config->field2, 'userid' => $USER->id)); 
-	        
-	        $expr = "\$res2 = {$uservalue} {$this->config->op2} {$this->config->value2} ;";
+	        if (!empty($this->config->field2)){
+	        	if (is_numeric($this->config->field2) && $this->config->field2 > 0){
+	        		$uservalue = $DB->get_field('user_info_data', 'data', array('fieldid' => $this->config->field2, 'userid' => $USER->id)); 
+			    } else {
+			    	$stduserfield = $this->config->field2;
+			    	$uservalue = $USER->$stduserfield;
+			    }
+		    }
+		    	        
+		    if ($this->config->op2 == '~=') {
+		        $expr = "\$res2 = preg_match('/{$this->config->value2}/', '{$uservalue}'}) ;";
+		    } else {        
+		        $expr = "\$res2 = {$uservalue} {$this->config->op1} '{$this->config->value2}' ;";
+		    }
 	        @eval($expr);
 	        
 	        $finalexpr = "\$res = $res1 {$this->config->op} $res2 ;"; 
@@ -117,13 +129,13 @@ class block_profilespecifichtml extends block_base {
         // Move embedded files into a proper filearea and adjust HTML links to match
 		// change proposed by jcockrell 
         $config->text_all = file_save_draft_area_files($data->text_all['itemid'], $this->context->id, 'block_profilespecifichtml', 'content', 0, array('subdirs'=>true), $data->text_all['text']);
-        $config->format_all = @$data->text_all['format'];
+        $config->format_all = (!isset($data->text_all['format'])) ? FORMAT_MOODLE : $data->text_all['format'];
 
         $config->text_match = file_save_draft_area_files($data->text_match['itemid'], $this->context->id, 'block_profilespecifichtml', 'match', 0, array('subdirs'=>true), $data->text_match['text']);
-        $config->format_match = @$data->text_matched['format'];
+        $config->format_match = (!isset($data->text_matched['format'])) ? FORMAT_MOODLE : $data->text_matched['format'];
 
         $config->text_nomatch = file_save_draft_area_files($data->text_nomatch['itemid'], $this->context->id, 'block_profilespecifichtml', 'nomatch', 0, array('subdirs'=>true), $data->text_nomatch['text']);
-        $config->format_nomatch = @$data->text_nomatched['format'];
+        $config->format_nomatch = (!isset($data->text_nomatched['format'])) ? FORMAT_MOODLE : $data->text_nomatched['format'] ;
 
         parent::instance_config_save($config, $nolongerused);
     }

@@ -42,5 +42,13 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+
+    'block/profilespecifichtml:myaddinstance' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_BLOCK,
+        'legacy' => array(
+            'manager' => CAP_ALLOW
+        )
+    ),
 );
 ?>
