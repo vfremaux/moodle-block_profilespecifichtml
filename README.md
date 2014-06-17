@@ -1,15 +1,6 @@
 moodle-block_profilespecifichtml
 ================================
 
-2013062800 : 
-
-Adds provision for usual user fields (core attributes) and
-adds a "Like" operator. Secures values in other operators
-for textual or numbers situations.
-
-
-=======
-
 This very simple block allows some content to be displayed to people having a special value
 in their profile attached to a custom field.
 

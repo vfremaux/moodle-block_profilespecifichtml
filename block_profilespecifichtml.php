@@ -1,4 +1,20 @@
-<?php //$Id: block_profilespecifichtml.php,v 1.2 2012-04-28 10:24:54 vf Exp $
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+require_once $CFG->dirroot.'/lib/filelib.php';
 
 class block_profilespecifichtml extends block_base {
 
@@ -11,7 +27,8 @@ class block_profilespecifichtml extends block_base {
     }
 
     function specialization() {
-        $this->title = isset($this->config->title) ? format_string($this->config->title) : format_string(get_string('newhtmlblock', 'block_profilespecifichtml'));
+        $newblockstr = get_string('newhtmlblock', 'block_profilespecifichtml');
+        $this->title = isset($this->config->title) ? format_string($this->config->title) : format_string($newblockstr);
     }
 
     function instance_allow_multiple() {
@@ -21,17 +38,20 @@ class block_profilespecifichtml extends block_base {
     function content_is_trusted() {
         global $SCRIPT;
 
-        if (!$context = get_context_instance_by_id($this->instance->parentcontextid)) {
+        if (!$context = context::instance_by_id($this->instance->parentcontextid)) {
             return false;
         }
-        //find out if this block is on the profile page
+
+        // Find out if this block is on the profile page.
         if ($context->contextlevel == CONTEXT_USER) {
             if ($SCRIPT === '/my/index.php') {
-                // this is exception - page is completely private, nobody else may see content there
-                // that is why we allow JS here
+                /*
+                 * this is exception - page is completely private, nobody else may see content there
+                 * that is why we allow JS here
+                 */
                 return true;
             } else {
-                // no JS on public personal pages, it would be a big security issue
+                // No JS on public personal pages, it would be a big security issue.
                 return false;
             }
         }
@@ -40,8 +60,8 @@ class block_profilespecifichtml extends block_base {
     }
 
     function get_content() {
-    	global $USER, $DB;
-    	
+        global $USER, $DB;
+        
         if ($this->content !== NULL) {
             return $this->content;
         }
@@ -49,72 +69,77 @@ class block_profilespecifichtml extends block_base {
         $filteropt = new stdClass;
         $filteropt->overflowdiv = true;
         if ($this->content_is_trusted()) {
-            // fancy html allowed only on course, category and system blocks.
+            // Fancy html allowed only on course, category and system blocks.
             $filteropt->noclean = true;
         }
         
         $this->content = new stdClass;
         
-        if (!isset($this->config)) $this->config = new StdClass;
-
-        $this->config->text_all = file_rewrite_pluginfile_urls(@$this->config->text_all, 'pluginfile.php', $this->context->id, 'block_profilespecifichtml', 'content', NULL);
-        $this->content->text = !empty($this->config->text_all) ? format_text($this->config->text_all, FORMAT_HTML, $filteropt) : '';
-
-        if (empty($this->config->field1) && empty($this->config->field2)){
-        	$this->content->footer = '';
-        	return($this->content);
-        }       
-        
-        if (!empty($this->config->field1)){
-        	if (is_numeric($this->config->field1) && $this->config->field1 > 0){
-		        $uservalue = $DB->get_field('user_info_data', 'data', array('fieldid' => $this->config->field1, 'userid' => $USER->id)); 
-		    } else {
-		    	$stduserfield = $this->config->field1;
-		    	$uservalue = $USER->$stduserfield;
-		    }
-	    }
-
-	    if ($this->config->op1 == '~=') {
-	        $expr = "\$res1 = preg_match('/{$this->config->value1}/', '{$uservalue}'}) ;";
-	    } else {        
-	        $expr = "\$res1 = {$uservalue} {$this->config->op1} '{$this->config->value1}' ;";
-	    }
-        @eval($expr);
-        
-        if ($this->config->op){
-
-	        if (!empty($this->config->field2)){
-	        	if (is_numeric($this->config->field2) && $this->config->field2 > 0){
-	        		$uservalue = $DB->get_field('user_info_data', 'data', array('fieldid' => $this->config->field2, 'userid' => $USER->id)); 
-			    } else {
-			    	$stduserfield = $this->config->field2;
-			    	$uservalue = $USER->$stduserfield;
-			    }
-		    }
-		    	        
-		    if ($this->config->op2 == '~=') {
-		        $expr = "\$res2 = preg_match('/{$this->config->value2}/', '{$uservalue}'}) ;";
-		    } else {        
-		        $expr = "\$res2 = {$uservalue} {$this->config->op1} '{$this->config->value2}' ;";
-		    }
-	        @eval($expr);
-	        
-	        $finalexpr = "\$res = $res1 {$this->config->op} $res2 ;"; 
-	        @eval($finalexpr);
-        } else {
-        	$res = @$res1;
+        if (!isset($this->config)) {
+            $this->config = new StdClass;
         }
 
-		if (@$res){
-            $this->config->text_match = file_rewrite_pluginfile_urls($this->config->text_match, 'pluginfile.php', $this->context->id, 'block_profilespecifichtml', 'match', NULL);
-        	$this->content->text .= format_text(@$this->config->text_match, FORMAT_HTML, $filteropt);
+        $this->config->text_all = file_rewrite_pluginfile_urls(@$this->config->text_all, 'pluginfile.php', 
+                                                            $this->context->id, 'block_profilespecifichtml', 'content', NULL);
+        $this->content->text = !empty($this->config->text_all) ? format_text($this->config->text_all, FORMAT_HTML, $filteropt) : '';
+
+        if (empty($this->config->field1) && empty($this->config->field2)) {
+            $this->content->footer = '';
+            return($this->content);
+        }
+
+        if (!empty($this->config->field1)) {
+            if (is_numeric($this->config->field1) && $this->config->field1 > 0) {
+                $uservalue = $DB->get_field('user_info_data', 'data', array('fieldid' => $this->config->field1, 'userid' => $USER->id)); 
+            } else {
+                $stduserfield = $this->config->field1;
+                $uservalue = $USER->$stduserfield;
+            }
+        }
+
+        if ($this->config->op1 == '~=') {
+            $expr = "\$res1 = preg_match('/{$this->config->value1}/', '{$uservalue}'}) ;";
         } else {
-            $this->config->text_nomatch = file_rewrite_pluginfile_urls($this->config->text_nomatch, 'pluginfile.php', $this->context->id, 'block_profilespecifichtml', 'nomatch', NULL);
-        	$this->content->text .= format_text(@$this->config->text_nomatch, FORMAT_HTML, $filteropt);
+            $expr = "\$res1 = {$uservalue} {$this->config->op1} '{$this->config->value1}' ;";
+        }
+        @eval($expr);
+
+        if ($this->config->op) {
+
+            if (!empty($this->config->field2)) {
+                if (is_numeric($this->config->field2) && $this->config->field2 > 0) {
+                    $uservalue = $DB->get_field('user_info_data', 'data', array('fieldid' => $this->config->field2, 'userid' => $USER->id)); 
+                } else {
+                    $stduserfield = $this->config->field2;
+                    $uservalue = $USER->$stduserfield;
+                }
+            }
+
+            if ($this->config->op2 == '~=') {
+                $expr = "\$res2 = preg_match('/{$this->config->value2}/', '{$uservalue}'}) ;";
+            } else {        
+                $expr = "\$res2 = {$uservalue} {$this->config->op1} '{$this->config->value2}' ;";
+            }
+            @eval($expr);
+
+            $finalexpr = "\$res = $res1 {$this->config->op} $res2 ;"; 
+            @eval($finalexpr);
+        } else {
+            $res = @$res1;
+        }
+
+        if (@$res) {
+            $this->config->text_match = file_rewrite_pluginfile_urls($this->config->text_match, 'pluginfile.php', 
+                                                                $this->context->id, 'block_profilespecifichtml', 'match', NULL);
+            $this->content->text .= format_text(@$this->config->text_match, FORMAT_HTML, $filteropt);
+        } else {
+            $this->config->text_nomatch = file_rewrite_pluginfile_urls($this->config->text_nomatch, 'pluginfile.php', 
+                                                                $this->context->id, 'block_profilespecifichtml', 'nomatch', NULL);
+            $this->content->text .= format_text(@$this->config->text_nomatch, FORMAT_HTML, $filteropt);
         }
         $this->content->footer = '';
 
-        unset($filteropt); // memory footprint
+        unset($filteropt); // Memory footprint.
 
         return $this->content;
     }
@@ -124,10 +149,9 @@ class block_profilespecifichtml extends block_base {
      */
     function instance_config_save($data, $nolongerused = false) {
         global $DB;
-        
+
         $config = clone($data);
-        // Move embedded files into a proper filearea and adjust HTML links to match
-		// change proposed by jcockrell 
+        // Move embedded files into a proper filearea and adjust HTML links.
         $config->text_all = file_save_draft_area_files($data->text_all['itemid'], $this->context->id, 'block_profilespecifichtml', 'content', 0, array('subdirs'=>true), $data->text_all['text']);
         $config->format_all = (!isset($data->text_all['format'])) ? FORMAT_MOODLE : $data->text_all['format'];
 
@@ -143,8 +167,8 @@ class block_profilespecifichtml extends block_base {
     /*
      * Hide the title bar when none set..
      */
-    function hide_header(){
+    function hide_header() {
         return empty($this->config->title);
     }
 }
-?>
+

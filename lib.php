@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -48,17 +47,19 @@ function block_profilespecifichtml_pluginfile($course, $birecord_or_cm, $context
 
     if ($parentcontext = get_context_instance_by_id($birecord_or_cm->parentcontextid)) {
         if ($parentcontext->contextlevel == CONTEXT_USER) {
-            // force download on all personal pages including /my/
-            //because we do not have reliable way to find out from where this is used
+            /*
+             * force download on all personal pages including /my/
+             * because we do not have reliable way to find out from where this is used
+             */
             $forcedownload = true;
         }
     } else {
-        // weird, there should be parent context, better force dowload then
+        // Weird, there should be parent context, better force dowload then.
         $forcedownload = true;
     }
 
     session_get_instance()->write_close();
-    send_stored_file($file, 60*60, 0, $forcedownload);
+    send_stored_file($file, 60 * 60, 0, $forcedownload);
 }
 
 /**
@@ -72,25 +73,25 @@ function block_profilespecifichtml_global_db_replace($search, $replace) {
 
     $instances = $DB->get_recordset('block_instances', array('blockname' => 'profilespecifichtml'));
     foreach ($instances as $instance) {
-        // TODO: intentionally hardcoded until MDL-26800 is fixed
+        // TODO: intentionally hardcoded until MDL-26800 is fixed.
         $config = unserialize(base64_decode($instance->configdata));
         $commit = false;
         if (isset($config->text_all) and is_string($config->text_all)) {
-        	$commit = true;
+            $commit = true;
             $config->text_all = str_replace($search, $replace, $config->text_all);
         }
 
         if (isset($config->text_match) and is_string($config->text_match)) {
-        	$commit = true;
+            $commit = true;
             $config->text_match = str_replace($search, $replace, $config->text_match);
         }
-        
+
         if (isset($config->text_nomatch) and is_string($config->text_nomatch)) {
-        	$commit = true;
+            $commit = true;
             $config->text_nomatch = str_replace($search, $replace, $config->text_nomatch);
         }
-                
-        if ($commit){
+
+        if ($commit) {
             $DB->set_field('block_instances', 'configdata', base64_encode(serialize($config)), array('id' => $instance->id));
         }
     }
