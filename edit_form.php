@@ -14,16 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Form for editing HTML block instances.
  *
  * @package   block_profilespecifichtml
+ * @category  blocks
  * @copyright 2012 Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @version   Moodle 2.x
  */
 
 class block_profilespecifichtml_edit_form extends block_edit_form {
+
     protected function specific_definition($mform) {
         global $COURSE, $DB;
 
@@ -63,6 +66,7 @@ class block_profilespecifichtml_edit_form extends block_edit_form {
         $group1[0] = &$mform->createElement('select', 'config_field1', '', $fieldoptions);
         $group1[1] = &$mform->createElement('select', 'config_op1', '', $fieldopoptions);
         $group1[2] = &$mform->createElement('text', 'config_value1', '', array('size' => 30));
+        $mform->setType('config_value1', PARAM_TEXT);
         $mform->addGroup($group1, 'group1', get_string('configprofilefield1', 'block_profilespecifichtml'), array('&nbsp;'), false);
 
         $mform->addElement('select', 'config_op', get_string('configprofileop', 'block_profilespecifichtml'), $clauseopoptions);
@@ -70,6 +74,7 @@ class block_profilespecifichtml_edit_form extends block_edit_form {
         $group2[0] = &$mform->createElement('select', 'config_field2', '', $fieldoptions);
         $group2[1] = &$mform->createElement('select', 'config_op2', '', $fieldopoptions);
         $group2[2] = &$mform->createElement('text', 'config_value2', '', array('size' => 30));
+        $mform->setType('config_value2', PARAM_TEXT);
         $mform->addGroup($group2, 'group2', get_string('configprofilefield2', 'block_profilespecifichtml'), array('&nbsp;'), false);
 
         $editoroptions = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'noclean' => true, 'context' => $this->block->context);
@@ -83,7 +88,7 @@ class block_profilespecifichtml_edit_form extends block_edit_form {
         $mform->setType('config_text_nomatch', PARAM_RAW); // XSS is prevented when printing the block contents and serving files
     }
 
-    function set_data($defaults, &$files = null) {
+    public function set_data($defaults, &$files = null) {
         global $COURSE;
 
         if (!isset($this->block->config)) {
@@ -94,7 +99,7 @@ class block_profilespecifichtml_edit_form extends block_edit_form {
             $this->block->config->text_match = '';
             $this->block->config->text_nomatch = '';
         }
-        
+
         $text_all = '';
         $text_match = '';
         $text_nomatch = '';

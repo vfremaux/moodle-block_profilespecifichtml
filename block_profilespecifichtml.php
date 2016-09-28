@@ -14,7 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once $CFG->dirroot.'/lib/filelib.php';
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * @package   block_profilespecifichtml
+ * @category  blocks
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright 2012 Valery Fremaux
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+require_once($CFG->dirroot.'/lib/filelib.php');
 
 class block_profilespecifichtml extends block_base {
 
@@ -165,7 +175,7 @@ class block_profilespecifichtml extends block_base {
     }
 
     /*
-     * Hide the title bar when none set..
+     * Hide the title bar when none set.
      */
     function hide_header() {
         return empty($this->config->title);

@@ -14,13 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
- * Form for editing HTML block instances.
- *
  * @package   block_profilespecifichtml
- * @copyright 2012 Valery Fremaux (valery.fremaux@gmail.com)
+ * @category  blocks
+ * @author    Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright 2012 Valery Fremaux
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @version   Moodle 2.x
  */
 
 function block_profilespecifichtml_pluginfile($course, $birecord_or_cm, $context, $filearea, $args, $forcedownload) {
@@ -45,7 +46,7 @@ function block_profilespecifichtml_pluginfile($course, $birecord_or_cm, $context
         send_file_not_found();
     }
 
-    if ($parentcontext = get_context_instance_by_id($birecord_or_cm->parentcontextid)) {
+    if ($parentcontext = context::instance_by_id($birecord_or_cm->parentcontextid)) {
         if ($parentcontext->contextlevel == CONTEXT_USER) {
             /*
              * force download on all personal pages including /my/
