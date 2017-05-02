@@ -72,7 +72,7 @@ class block_profilespecifichtml extends block_base {
     function get_content() {
         global $USER, $DB;
         
-        if ($this->content !== NULL) {
+        if ($this->content !== null) {
             return $this->content;
         }
 
