@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   block_profilespecifichtml
  * @category  blocks
@@ -23,29 +21,30 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright 2012 Valery Fremaux
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/lib/filelib.php');
 
 class block_profilespecifichtml extends block_base {
 
-    function init() {
+    public function init() {
         $this->title = get_string('blockname', 'block_profilespecifichtml');
     }
 
-    function applicable_formats() {
+    public function applicable_formats() {
         return array('all' => true);
     }
 
-    function specialization() {
+    public function specialization() {
         $newblockstr = get_string('newhtmlblock', 'block_profilespecifichtml');
         $this->title = isset($this->config->title) ? format_string($this->config->title) : format_string($newblockstr);
     }
 
-    function instance_allow_multiple() {
+    public function instance_allow_multiple() {
         return true;
     }
 
-    function content_is_trusted() {
+    public function content_is_trusted() {
         global $SCRIPT;
 
         if (!$context = context::instance_by_id($this->instance->parentcontextid)) {
@@ -69,7 +68,7 @@ class block_profilespecifichtml extends block_base {
         return true;
     }
 
-    function get_content() {
+    public function get_content() {
         global $USER, $DB;
         
         if ($this->content !== null) {
@@ -157,7 +156,7 @@ class block_profilespecifichtml extends block_base {
     /**
      * Serialize and store config data
      */
-    function instance_config_save($data, $nolongerused = false) {
+    public function instance_config_save($data, $nolongerused = false) {
         global $DB;
 
         $config = clone($data);
@@ -177,7 +176,7 @@ class block_profilespecifichtml extends block_base {
     /*
      * Hide the title bar when none set.
      */
-    function hide_header() {
+    public function hide_header() {
         return empty($this->config->title);
     }
 }
