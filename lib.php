@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   block_profilespecifichtml
  * @category  blocks
@@ -23,9 +21,9 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright 2012 Valery Fremaux
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 function block_profilespecifichtml_pluginfile($course, $birecord_or_cm, $context, $filearea, $args, $forcedownload) {
-    global $SCRIPT;
 
     if ($context->contextlevel != CONTEXT_BLOCK) {
         send_file_not_found();
@@ -42,7 +40,8 @@ function block_profilespecifichtml_pluginfile($course, $birecord_or_cm, $context
     $filename = array_pop($args);
     $filepath = $args ? '/'.implode('/', $args).'/' : '/';
 
-    if (!$file = $fs->get_file($context->id, 'block_profilespecifichtml', $filearea, 0, $filepath, $filename) or $file->is_directory()) {
+    if ((!$file = $fs->get_file($context->id, 'block_profilespecifichtml', $filearea, 0, $filepath, $filename)) ||
+            $file->is_directory()) {
         send_file_not_found();
     }
 

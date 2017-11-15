@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * @package   block_profilespecifichtml
  * @category  blocks
@@ -23,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright 2012 Valery Fremaux
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/lib/filelib.php');
 
@@ -71,7 +70,7 @@ class block_profilespecifichtml extends block_base {
 
     function get_content() {
         global $USER, $DB;
-        
+
         if ($this->content !== NULL) {
             return $this->content;
         }
@@ -140,11 +139,11 @@ class block_profilespecifichtml extends block_base {
 
         if (@$res) {
             $this->config->text_match = file_rewrite_pluginfile_urls($this->config->text_match, 'pluginfile.php', 
-                                                                $this->context->id, 'block_profilespecifichtml', 'match', NULL);
+                                                                $this->context->id, 'block_profilespecifichtml', 'match', null);
             $this->content->text .= format_text(@$this->config->text_match, FORMAT_HTML, $filteropt);
         } else {
             $this->config->text_nomatch = file_rewrite_pluginfile_urls($this->config->text_nomatch, 'pluginfile.php', 
-                                                                $this->context->id, 'block_profilespecifichtml', 'nomatch', NULL);
+                                                                $this->context->id, 'block_profilespecifichtml', 'nomatch', null);
             $this->content->text .= format_text(@$this->config->text_nomatch, FORMAT_HTML, $filteropt);
         }
         $this->content->footer = '';
@@ -162,13 +161,18 @@ class block_profilespecifichtml extends block_base {
 
         $config = clone($data);
         // Move embedded files into a proper filearea and adjust HTML links.
-        $config->text_all = file_save_draft_area_files($data->text_all['itemid'], $this->context->id, 'block_profilespecifichtml', 'content', 0, array('subdirs'=>true), $data->text_all['text']);
+        $config->text_all = file_save_draft_area_files($data->text_all['itemid'], $this->context->id, 'block_profilespecifichtml',
+                                                       'content', 0, array('subdirs'=>true), $data->text_all['text']);
         $config->format_all = (!isset($data->text_all['format'])) ? FORMAT_MOODLE : $data->text_all['format'];
 
-        $config->text_match = file_save_draft_area_files($data->text_match['itemid'], $this->context->id, 'block_profilespecifichtml', 'match', 0, array('subdirs'=>true), $data->text_match['text']);
+        $config->text_match = file_save_draft_area_files($data->text_match['itemid'], $this->context->id,
+                                                         'block_profilespecifichtml', 'match', 0, array('subdirs'=>true),
+                                                         $data->text_match['text']);
         $config->format_match = (!isset($data->text_matched['format'])) ? FORMAT_MOODLE : $data->text_matched['format'];
 
-        $config->text_nomatch = file_save_draft_area_files($data->text_nomatch['itemid'], $this->context->id, 'block_profilespecifichtml', 'nomatch', 0, array('subdirs'=>true), $data->text_nomatch['text']);
+        $config->text_nomatch = file_save_draft_area_files($data->text_nomatch['itemid'], $this->context->id,
+                                                           'block_profilespecifichtml', 'nomatch', 0, array('subdirs'=>true),
+                                                           $data->text_nomatch['text']);
         $config->format_nomatch = (!isset($data->text_nomatched['format'])) ? FORMAT_MOODLE : $data->text_nomatched['format'] ;
 
         parent::instance_config_save($config, $nolongerused);
