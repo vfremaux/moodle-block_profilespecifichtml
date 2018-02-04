@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Form for editing HTML block instances.
  *
@@ -24,6 +22,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright 2012 Valery Fremaux (valery.fremaux@gmail.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
 
 class block_profilespecifichtml_edit_form extends block_edit_form {
 
@@ -45,7 +44,8 @@ class block_profilespecifichtml_edit_form extends block_edit_form {
         );
 
         foreach ($userfieldcats as $cat) {
-            $fieldoptions = $fieldoptions + $DB->get_records_menu('user_info_field', array('categoryid' => $cat->id), 'sortorder', 'id,name');
+            $params = array('categoryid' => $cat->id);
+            $fieldoptions = $fieldoptions + $DB->get_records_menu('user_info_field', $params, 'sortorder', 'id,name');
         }
 
         $fieldopoptions['=='] = '=';
@@ -67,7 +67,8 @@ class block_profilespecifichtml_edit_form extends block_edit_form {
         $group1[1] = &$mform->createElement('select', 'config_op1', '', $fieldopoptions);
         $group1[2] = &$mform->createElement('text', 'config_value1', '', array('size' => 30));
         $mform->setType('config_value1', PARAM_TEXT);
-        $mform->addGroup($group1, 'group1', get_string('configprofilefield1', 'block_profilespecifichtml'), array('&nbsp;'), false);
+        $label = get_string('configprofilefield1', 'block_profilespecifichtml');
+        $mform->addGroup($group1, 'group1', $label, array('&nbsp;'), false);
 
         $mform->addElement('select', 'config_op', get_string('configprofileop', 'block_profilespecifichtml'), $clauseopoptions);
 
@@ -75,17 +76,21 @@ class block_profilespecifichtml_edit_form extends block_edit_form {
         $group2[1] = &$mform->createElement('select', 'config_op2', '', $fieldopoptions);
         $group2[2] = &$mform->createElement('text', 'config_value2', '', array('size' => 30));
         $mform->setType('config_value2', PARAM_TEXT);
-        $mform->addGroup($group2, 'group2', get_string('configprofilefield2', 'block_profilespecifichtml'), array('&nbsp;'), false);
+        $label = get_string('configprofilefield2', 'block_profilespecifichtml');
+        $mform->addGroup($group2, 'group2', $label, array('&nbsp;'), false);
 
         $editoroptions = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'noclean' => true, 'context' => $this->block->context);
-        $mform->addElement('editor', 'config_text_all', get_string('configcontentforall', 'block_profilespecifichtml'), null, $editoroptions);
-        $mform->setType('config_text_all', PARAM_RAW); // XSS is prevented when printing the block contents and serving files
+        $label = get_string('configcontentforall', 'block_profilespecifichtml');
+        $mform->addElement('editor', 'config_text_all', $label, null, $editoroptions);
+        $mform->setType('config_text_all', PARAM_RAW); // XSS is prevented when printing the block contents and serving files.
 
-        $mform->addElement('editor', 'config_text_match', get_string('configcontentwhenmatch', 'block_profilespecifichtml'), null, $editoroptions);
-        $mform->setType('config_text_match', PARAM_RAW); // XSS is prevented when printing the block contents and serving files
+        $label = get_string('configcontentwhenmatch', 'block_profilespecifichtml');
+        $mform->addElement('editor', 'config_text_match', $label, null, $editoroptions);
+        $mform->setType('config_text_match', PARAM_RAW); // XSS is prevented when printing the block contents and serving files.
 
-        $mform->addElement('editor', 'config_text_nomatch', get_string('configcontentwhennomatch', 'block_profilespecifichtml'), null, $editoroptions);
-        $mform->setType('config_text_nomatch', PARAM_RAW); // XSS is prevented when printing the block contents and serving files
+        $label = get_string('configcontentwhennomatch', 'block_profilespecifichtml');
+        $mform->addElement('editor', 'config_text_nomatch', $label, null, $editoroptions);
+        $mform->setType('config_text_nomatch', PARAM_RAW); // XSS is prevented when printing the block contents and serving files.
     }
 
     public function set_data($defaults, &$files = null) {
@@ -100,45 +105,51 @@ class block_profilespecifichtml_edit_form extends block_edit_form {
             $this->block->config->text_nomatch = '';
         }
 
-        $text_all = '';
-        $text_match = '';
-        $text_nomatch = '';
+        $textall = '';
+        $textmatch = '';
+        $textnomatch = '';
         if (!empty($this->block->config) && is_object($this->block->config)) {
 
             // Draft file handling for all.
-            $text_all = $this->block->config->text_all;
-            $draftid_editor = file_get_submitted_draft_itemid('config_text_all');
-            if (empty($text_all)) {
+            $textall = $this->block->config->text_all;
+            $draftideditor = file_get_submitted_draft_itemid('config_text_all');
+            if (empty($textall)) {
                 $currenttext = '';
             } else {
-                $currenttext = $text_all;
+                $currenttext = $textall;
             }
-            $defaults->config_text_all['text'] = file_prepare_draft_area($draftid_editor, $this->block->context->id, 'block_profilespecifichtml', 'content', 0, array('subdirs' => true), $currenttext);
-            $defaults->config_text_all['itemid'] = $draftid_editor;
+            $defaults->config_text_all['text'] = file_prepare_draft_area($draftideditor, $this->block->context->id,
+                                                                         'block_profilespecifichtml', 'content', 0,
+                                                                         array('subdirs' => true), $currenttext);
+            $defaults->config_text_all['itemid'] = $draftideditor;
             $defaults->config_text_all['format'] = @$this->block->config->format;
 
             // Draft file handling for matching.
-            $text_match = $this->block->config->text_match;
-            $draftid_editor = file_get_submitted_draft_itemid('config_text_match');
-            if (empty($text_match)) {
+            $textmatch = $this->block->config->text_match;
+            $draftideditor = file_get_submitted_draft_itemid('config_text_match');
+            if (empty($textmatch)) {
                 $currenttext = '';
             } else {
-                $currenttext = $text_match;
+                $currenttext = $textmatch;
             }
-            $defaults->config_text_match['text'] = file_prepare_draft_area($draftid_editor, $this->block->context->id, 'block_profilespecifichtml', 'match', 0, array('subdirs' => true), $currenttext);
-            $defaults->config_text_match['itemid'] = $draftid_editor;
+            $defaults->config_text_match['text'] = file_prepare_draft_area($draftideditor, $this->block->context->id,
+                                                                           'block_profilespecifichtml', 'match', 0,
+                                                                           array('subdirs' => true), $currenttext);
+            $defaults->config_text_match['itemid'] = $draftideditor;
             $defaults->config_text_match['format'] = @$this->block->config->format;
 
             // Draft file handling for no matching.
-            $text_nomatch = $this->block->config->text_nomatch;
-            $draftid_editor = file_get_submitted_draft_itemid('config_text_nomatch');
-            if (empty($text_nomatch)) {
+            $textnomatch = $this->block->config->text_nomatch;
+            $draftideditor = file_get_submitted_draft_itemid('config_text_nomatch');
+            if (empty($textnomatch)) {
                 $currenttext = '';
             } else {
-                $currenttext = $text_nomatch;
+                $currenttext = $textnomatch;
             }
-            $defaults->config_text_nomatch['text'] = file_prepare_draft_area($draftid_editor, $this->block->context->id, 'block_profilespecifichtml', 'nomatch', 0, array('subdirs' => true), $currenttext);
-            $defaults->config_text_nomatch['itemid'] = $draftid_editor;
+            $defaults->config_text_nomatch['text'] = file_prepare_draft_area($draftideditor, $this->block->context->id,
+                                                                             'block_profilespecifichtml', 'nomatch', 0,
+                                                                             array('subdirs' => true), $currenttext);
+            $defaults->config_text_nomatch['itemid'] = $draftideditor;
             $defaults->config_text_nomatch['format'] = @$this->block->config->format;
         }
 
@@ -158,9 +169,9 @@ class block_profilespecifichtml_edit_form extends block_edit_form {
 
         // Restore $text in each.
         $this->block->config = new StdClass;
-        $this->block->config->text_all = $text_all;
-        $this->block->config->text_match = $text_match;
-        $this->block->config->text_nomatch = $text_nomatch;
+        $this->block->config->text_all = $textall;
+        $this->block->config->text_match = $textmatch;
+        $this->block->config->text_nomatch = $textnomatch;
 
         if (isset($title)) {
             // Reset the preserved title.
