@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Version details.
  *
  * @package    block_profilespecifichtml
  * @category   blocks
@@ -25,9 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016083100;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2016120500;        // Requires this Moodle version
-$plugin->component = 'block_profilespecifichtml';  // Full name of the plugin (used for diagnostics)
+$plugin->version   = 2016083100;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2016120500;        // Requires this Moodle version.
+$plugin->component = 'block_profilespecifichtml';  // Full name of the plugin (used for diagnostics).
 $plugin->maturity = MATURITY_RC;
 $plugin->release = '3.2.0 (build 2013062800)'; 
 
