@@ -70,7 +70,7 @@ class block_profilespecifichtml extends block_base {
 
     public function get_content() {
         global $USER, $DB;
-        
+
         if ($this->content !== null) {
             return $this->content;
         }
@@ -81,15 +81,15 @@ class block_profilespecifichtml extends block_base {
             // Fancy html allowed only on course, category and system blocks.
             $filteropt->noclean = true;
         }
-        
+
         $this->content = new stdClass;
-        
+
         if (!isset($this->config)) {
             $this->config = new StdClass;
         }
 
         $this->config->text_all = file_rewrite_pluginfile_urls(@$this->config->text_all, 'pluginfile.php', 
-                                                            $this->context->id, 'block_profilespecifichtml', 'content', NULL);
+                                                            $this->context->id, 'block_profilespecifichtml', 'content', null);
         $this->content->text = !empty($this->config->text_all) ? format_text($this->config->text_all, FORMAT_HTML, $filteropt) : '';
 
         if (empty($this->config->field1) && empty($this->config->field2)) {
@@ -99,51 +99,125 @@ class block_profilespecifichtml extends block_base {
 
         if (!empty($this->config->field1)) {
             if (is_numeric($this->config->field1) && $this->config->field1 > 0) {
-                $uservalue = $DB->get_field('user_info_data', 'data', array('fieldid' => $this->config->field1, 'userid' => $USER->id)); 
+                // Custom field.
+                $params = array('fieldid' => $this->config->field1, 'userid' => $USER->id);
+                $uservalue = $DB->get_field('user_info_data', 'data', $params);
             } else {
+                // Userfield by name in user's core profile.
                 $stduserfield = $this->config->field1;
                 $uservalue = $USER->$stduserfield;
             }
         }
 
-        if ($this->config->op1 == '~=') {
-            $expr = "\$res1 = preg_match('/{$this->config->value1}/', '{$uservalue}'}) ;";
-        } else {
-            $expr = "\$res1 = {$uservalue} {$this->config->op1} '{$this->config->value1}' ;";
+        switch ($this->config->op1) {
+            case '~=': {
+                $res1 = preg_match("/{$this->config->value1}/", "{$uservalue}");
+                break;
+            }
+
+            case '=': {
+                $res1 = $this->config->value1 == $uservalue;
+                break;
+            }
+
+            case '!=': {
+                $res1 = $this->config->value1 != $uservalue;
+                break;
+            }
+
+            case '>': {
+                $res1 = $this->config->value1 > uservalue;
+                break;
+            }
+
+            case '<': {
+                $res1 = $this->config->value1 < uservalue;
+                break;
+            }
+
+            case '>=': {
+                $res1 = $this->config->value1 >= uservalue;
+                break;
+            }
+
+            case '<=': {
+                $res1 = $this->config->value1 <= uservalue;
+                break;
+            }
         }
-        @eval($expr);
 
         if ($this->config->op) {
 
             if (!empty($this->config->field2)) {
                 if (is_numeric($this->config->field2) && $this->config->field2 > 0) {
-                    $uservalue = $DB->get_field('user_info_data', 'data', array('fieldid' => $this->config->field2, 'userid' => $USER->id)); 
+                    $params = array('fieldid' => $this->config->field2, 'userid' => $USER->id);
+                    $uservalue = $DB->get_field('user_info_data', 'data', $params);
                 } else {
                     $stduserfield = $this->config->field2;
                     $uservalue = $USER->$stduserfield;
                 }
             }
 
-            if ($this->config->op2 == '~=') {
-                $expr = "\$res2 = preg_match('/{$this->config->value2}/', '{$uservalue}'}) ;";
-            } else {        
-                $expr = "\$res2 = {$uservalue} {$this->config->op1} '{$this->config->value2}' ;";
-            }
-            @eval($expr);
+            switch ($this->config->op2) {
+                case '~=': {
+                    $res2 = preg_match("/{$this->config->value2}/", "{$uservalue}");
+                    break;
+                }
 
-            $finalexpr = "\$res = $res1 {$this->config->op} $res2 ;"; 
-            @eval($finalexpr);
+                case '=': {
+                    $res2 = $this->config->value2 == $uservalue;
+                    break;
+                }
+
+                case '>': {
+                    $res2 = $this->config->value2 > uservalue;
+                    break;
+                }
+
+                case '<': {
+                    $res2 = $this->config->value2 < uservalue;
+                    break;
+                }
+
+                case '>=': {
+                    $res2 = $this->config->value2 >= uservalue;
+                    break;
+                }
+
+                case '<=': {
+                    $res2 = $this->config->value2 <= uservalue;
+                    break;
+                }
+            }
+
+            switch ($this->config->op) {
+                case '&&': {
+                    $finalexpr = $res = $res1 && $res2;
+                    break;
+                }
+
+                case '||': {
+                    $finalexpr = $res = $res1 || $res2;
+                    break;
+                }
+
+                case '^': {
+                    $finalexpr = $res = $res1 ^ $res2;
+                    break;
+                }
+            }
+
         } else {
             $res = @$res1;
         }
 
         if (@$res) {
             $this->config->text_match = file_rewrite_pluginfile_urls($this->config->text_match, 'pluginfile.php', 
-                                                                $this->context->id, 'block_profilespecifichtml', 'match', NULL);
+                                                                $this->context->id, 'block_profilespecifichtml', 'match', null);
             $this->content->text .= format_text(@$this->config->text_match, FORMAT_HTML, $filteropt);
         } else {
             $this->config->text_nomatch = file_rewrite_pluginfile_urls($this->config->text_nomatch, 'pluginfile.php', 
-                                                                $this->context->id, 'block_profilespecifichtml', 'nomatch', NULL);
+                                                                $this->context->id, 'block_profilespecifichtml', 'nomatch', null);
             $this->content->text .= format_text(@$this->config->text_nomatch, FORMAT_HTML, $filteropt);
         }
         $this->content->footer = '';
@@ -161,14 +235,20 @@ class block_profilespecifichtml extends block_base {
 
         $config = clone($data);
         // Move embedded files into a proper filearea and adjust HTML links.
-        $config->text_all = file_save_draft_area_files($data->text_all['itemid'], $this->context->id, 'block_profilespecifichtml', 'content', 0, array('subdirs'=>true), $data->text_all['text']);
+        $config->text_all = file_save_draft_area_files($data->text_all['itemid'], $this->context->id,
+                                                       'block_profilespecifichtml', 'content', 0,
+                                                       array('subdirs'=>true), $data->text_all['text']);
         $config->format_all = (!isset($data->text_all['format'])) ? FORMAT_MOODLE : $data->text_all['format'];
 
-        $config->text_match = file_save_draft_area_files($data->text_match['itemid'], $this->context->id, 'block_profilespecifichtml', 'match', 0, array('subdirs'=>true), $data->text_match['text']);
+        $config->text_match = file_save_draft_area_files($data->text_match['itemid'], $this->context->id,
+                                                         'block_profilespecifichtml', 'match', 0, array('subdirs'=>true),
+                                                         $data->text_match['text']);
         $config->format_match = (!isset($data->text_matched['format'])) ? FORMAT_MOODLE : $data->text_matched['format'];
 
-        $config->text_nomatch = file_save_draft_area_files($data->text_nomatch['itemid'], $this->context->id, 'block_profilespecifichtml', 'nomatch', 0, array('subdirs'=>true), $data->text_nomatch['text']);
-        $config->format_nomatch = (!isset($data->text_nomatched['format'])) ? FORMAT_MOODLE : $data->text_nomatched['format'] ;
+        $config->text_nomatch = file_save_draft_area_files($data->text_nomatch['itemid'], $this->context->id,
+                                                           'block_profilespecifichtml', 'nomatch', 0,
+                                                           array('subdirs'=>true), $data->text_nomatch['text']);
+        $config->format_nomatch = (!isset($data->text_nomatched['format'])) ? FORMAT_MOODLE : $data->text_nomatched['format'];
 
         parent::instance_config_save($config, $nolongerused);
     }
