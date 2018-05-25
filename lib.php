@@ -23,6 +23,14 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * This function is not implemented in this plugin, but is needed to mark
+ * the vf documentation custom volume availability.
+ */
+function block_profilespecifichtml_supports_feature($feature) {
+    assert(1);
+}
+
 function block_profilespecifichtml_pluginfile($course, $birecordorcm, $context, $filearea, $args, $forcedownload) {
     global $SCRIPT;
 

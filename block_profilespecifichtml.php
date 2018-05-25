@@ -110,6 +110,7 @@ class block_profilespecifichtml extends block_base {
         }
 
         switch ($this->config->op1) {
+
             case '~=': {
                 $res1 = preg_match("/{$this->config->value1}/", "{$uservalue}");
                 break;
