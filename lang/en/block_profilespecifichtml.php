@@ -17,6 +17,9 @@
 $string['profilespecifichtml:addinstance'] = 'Can add instance';
 $string['profilespecifichtml:myaddinstance'] = 'Can add instance to My page';
 
+// Privacy.
+$string['privacy:metadata'] = 'The Profile Specific HTML Block does not directly store any personal data about any user.';
+
 $string['blockname'] = 'HTML (on profile field)';
 $string['pluginname'] = 'HTML (on profile field)';
 $string['newhtmlblock'] = 'New Profile Html Block';
