@@ -116,6 +116,7 @@ class block_profilespecifichtml extends block_base {
                 break;
             }
 
+            case '==':
             case '=': {
                 $res1 = $this->config->value1 == $uservalue;
                 break;
@@ -165,6 +166,7 @@ class block_profilespecifichtml extends block_base {
                     break;
                 }
 
+                case '==':
                 case '=': {
                     $res2 = $this->config->value2 == $uservalue;
                     break;
