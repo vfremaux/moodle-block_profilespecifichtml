@@ -18,18 +18,19 @@
  * Version details.
  *
  * @package    block_profilespecifichtml
+ * @category   blocks
  * @author     valery fremaux (valery.fremaux@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2025011400;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2016083100;        // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2022112801;        // Requires this Moodle version.
 $plugin->component = 'block_profilespecifichtml';  // Full name of the plugin (used for diagnostics).
 $plugin->maturity = MATURITY_RC;
-$plugin->release = '4.5.0 (build 2016083100)';
-$plugin->supported = [401, 405];
+$plugin->release = '4.1.0 (build 2016083100)';
+$plugin->supported = [401, 402];
 
 // Non Moodle attributes.
-$plugin->codeincrement = '4.5.0000';
+$plugin->codeincrement = '4.1.0000';
