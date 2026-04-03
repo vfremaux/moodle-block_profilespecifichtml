@@ -49,9 +49,10 @@ function block_profilespecifichtml_pluginfile($course, $birecordorcm, $context, 
     $filename = array_pop($args);
     $filepath = $args ? '/'.implode('/', $args).'/' : '/';
 
-    if (!$file = $fs->get_file($context->id, 'block_profilespecifichtml', $filearea, 0, $filepath, $filename) ||
+    if (!($file = $fs->get_file($context->id, 'block_profilespecifichtml', $filearea, 0, $filepath, $filename)) ||
             $file->is_directory()) {
         send_file_not_found();
+        return false;
     }
 
     if ($parentcontext = context::instance_by_id($birecordorcm->parentcontextid)) {
@@ -67,7 +68,6 @@ function block_profilespecifichtml_pluginfile($course, $birecordorcm, $context, 
         $forcedownload = true;
     }
 
-    session_get_instance()->write_close();
     send_stored_file($file, 60 * 60, 0, $forcedownload);
 }
 

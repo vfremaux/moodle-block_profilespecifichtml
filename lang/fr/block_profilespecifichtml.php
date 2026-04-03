@@ -19,6 +19,7 @@ $string['profilespecifichtml:myaddinstance'] = 'Peut ajouter une instance aux pa
 
 $string['blockname'] = 'HTML (par profil)';
 $string['pluginname'] = 'HTML (par profil)';
+$string['pluginname_help'] = 'Pour afficher du contenu libre suivant un profil cible.';
 $string['newhtmlblock'] = 'Nouveau bloc Html sur profil';
 $string['leaveblanktohide'] = 'Laisser vide pour cacher';
 $string['configtitle'] = 'Titre visible du bloc ';

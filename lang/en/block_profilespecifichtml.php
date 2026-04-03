@@ -22,6 +22,7 @@ $string['privacy:metadata'] = 'The Profile Specific HTML Block does not directly
 
 $string['blockname'] = 'HTML (on profile field)';
 $string['pluginname'] = 'HTML (on profile field)';
+$string['pluginname_help'] = 'A block that displays a content if conditions on user profile fields are matched.';
 $string['newhtmlblock'] = 'New Profile Html Block';
 $string['leaveblanktohide'] = 'Leave blank to hide';
 $string['configtitle'] = 'Visible title of the block';
